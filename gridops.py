@@ -81,7 +81,23 @@ def griddfs(grid,
                     q.append(((nx, ny),path+[(y,x)]))
 
     return result
+
+def gridflood(grid, pos, newvalue, inplace=True):
+
+    if not inplace:
+        grid = grid.copy()
+
+    start_value = grid[pos[0]][pos[1]]
+
+    def cv(g,r,c):
+        g[r][c] = newvalue
+        return None
     
+    gridbfs(grid, start_pos=pos,
+            directions=cardinal,
+            can_move_to=lambda g,r,c: g[r][c] == start_value,
+            is_target=cv)
+    return grid
 
 if __name__ == '__main__':
     grid = [
@@ -97,3 +113,17 @@ if __name__ == '__main__':
                 is_target=lambda g,r,c: True if grid[r][c] == 2 else None)
 
     print(r)
+
+
+    grid = [
+        [0,0,0,0,0],
+        [0,1,1,1,0],
+        [0,1,0,0,0],
+        [0,1,1,1,0],
+        [0,0,0,0,1]
+    ]
+
+    g = gridflood(grid, (0,0), 2)
+    for r in g:
+        print(r)
+
