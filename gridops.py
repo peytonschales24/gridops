@@ -82,6 +82,49 @@ def griddfs(grid,
 
     return result
 
+def grid_line_points(grid, start, end, stop=None):
+
+    if start[1] < end[1]:
+        dx = end[1] - start[1]
+        sx = 1
+    else:
+        dx = start[1] - end[1]
+        sx = -1
+
+    if start[0] < end[0]:
+        dy = start[0] - end[0]
+        sy = 1
+    else:
+        dy = end[0] - start[0]
+        sy = -1
+
+    e = dx + dy
+    e2 = e + e
+
+    cx = start[1]
+    cy = start[0]
+
+    if stop is not None and stop(grid,cy,cx):
+        return None
+
+    yield cy,cx
+
+    while True:
+        if cx == end[1] and cy == end[0]:
+            break
+        if e2 >= dy:
+            e = e + dy
+            cx += sx
+        if e2 <= dx:
+            e = e + dx
+            cy += sy
+        if stop is not None and stop(grid, cy, cx):
+            yield cy, cx
+            break
+        
+        e2 = e + e
+        yield cy,cx
+
 def gridflood(grid, pos, newvalue, inplace=True):
 
     if not inplace:
@@ -127,3 +170,19 @@ if __name__ == '__main__':
     for r in g:
         print(r)
 
+    print("")
+    
+    grid = [
+        [0,0,0,0,0],
+        [0,0,0,0,0],
+        [0,0,0,0,0],
+        [0,0,0,0,0],
+        [0,0,0,0,0]
+    ]
+
+    for y,x in grid_line_points(grid, (0,0), (4,4), stop=lambda g,r,c: g[r][c] == 2):
+        grid[y][x] = 1
+
+    for r in grid:
+        print(r)
+        
